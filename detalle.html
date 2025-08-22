@@ -1,0 +1,230 @@
+<!-- detalle.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalles del Caso</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 15px;
+      display: block;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .section {
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 2px solid #ddd;
+    }
+    .section-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #007bff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .add-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      font-size: 20px;
+      padding: 5px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .add-btn:hover {
+      background-color: #0056b3;
+    }
+    .denunciado {
+      margin-top: 15px;
+      border: 1px dashed #aaa;
+      padding: 15px;
+      border-radius: 12px;
+      background: #f9f9f9;
+    }
+    .save-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      margin-top: 30px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .save-btn:hover {
+      background-color: #1e7e34;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Detalles del Caso Nº <span id="caseNum"></span></h2>
+
+    <!-- Denunciados -->
+    <div class="section">
+      <div class="section-title">
+        <span>Denunciados</span>
+        <button class="add-btn" onclick="agregarDenunciado()">+</button>
+      </div>
+      <div id="denunciados"></div>
+    </div>
+
+    <!-- Denunciante -->
+    <div class="section">
+      <div class="section-title">Denunciante</div>
+      <label>Nombre y Apellido</label>
+      <input type="text" id="denunciante">
+    </div>
+
+    <!-- Información del Caso -->
+    <div class="section">
+      <div class="section-title">Información del Caso</div>
+
+      <label>Exposición Inicial</label>
+      <textarea id="exposicion" rows="3"></textarea>
+
+      <label>Consulta ANMAC</label>
+      <input type="text" id="anmac">
+
+      <label>Restricción de Armamento</label>
+      <input type="text" id="restriccion">
+
+      <label>Restitución de Armamento</label>
+      <input type="text" id="restitucion">
+
+      <label>JUMERE</label>
+      <input type="text" id="jumere">
+
+      <label>Informe Disciplinario Administrativo</label>
+      <input type="text" id="informe">
+
+      <label>Breve Reseña del Caso</label>
+      <textarea id="resena" rows="3"></textarea>
+
+      <label>Inicio del Caso</label>
+      <input type="date" id="inicio">
+
+      <label>Finalización del Caso</label>
+      <input type="date" id="fin">
+    </div>
+
+    <button class="save-btn" onclick="guardarDetalles()">Guardar Detalles</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const num = params.get('caso');
+    document.getElementById("caseNum").innerText = num;
+
+    function agregarDenunciado(data = {}) {
+      const contenedor = document.getElementById('denunciados');
+      const div = document.createElement('div');
+      div.className = 'denunciado';
+      div.innerHTML = `
+        <label>Nombre y Apellido</label>
+        <input type="text" value="${data.nombre || ''}">
+        <label>MI</label>
+        <input type="text" value="${data.mi || ''}">
+        <label>CE</label>
+        <input type="text" value="${data.ce || ''}">
+        <label>Grado</label>
+        <input type="text" value="${data.grado || ''}">
+        <label>Situación de Revista</label>
+        <input type="text" value="${data.situacion || ''}">
+        <label>Unidad de Revista</label>
+        <input type="text" value="${data.unidad || ''}">
+      `;
+      contenedor.appendChild(div);
+    }
+
+    function guardarDetalles() {
+      const denunciante = document.getElementById('denunciante').value;
+      const exposicion = document.getElementById('exposicion').value;
+      const anmac = document.getElementById('anmac').value;
+      const restriccion = document.getElementById('restriccion').value;
+      const restitucion = document.getElementById('restitucion').value;
+      const jumere = document.getElementById('jumere').value;
+      const informe = document.getElementById('informe').value;
+      const resena = document.getElementById('resena').value;
+      const inicio = document.getElementById('inicio').value;
+      const fin = document.getElementById('fin').value;
+
+      const denunciados = [];
+      document.querySelectorAll('.denunciado').forEach(div => {
+        const inputs = div.querySelectorAll('input');
+        denunciados.push({
+          nombre: inputs[0].value,
+          mi: inputs[1].value,
+          ce: inputs[2].value,
+          grado: inputs[3].value,
+          situacion: inputs[4].value,
+          unidad: inputs[5].value
+        });
+      });
+
+      const data = {
+        denunciante, exposicion, anmac, restriccion,
+        restitucion, jumere, informe, resena,
+        inicio, fin, denunciados
+      };
+
+      localStorage.setItem(`detalle-${num}`, JSON.stringify(data));
+      alert("Detalles guardados correctamente.");
+    }
+
+    // Al cargar la página
+    window.onload = function() {
+      const detalle = JSON.parse(localStorage.getItem(`detalle-${num}`));
+      if (detalle) {
+        document.getElementById('denunciante').value = detalle.denunciante || "";
+        document.getElementById('exposicion').value = detalle.exposicion || "";
+        document.getElementById('anmac').value = detalle.anmac || "";
+        document.getElementById('restriccion').value = detalle.restriccion || "";
+        document.getElementById('restitucion').value = detalle.restitucion || "";
+        document.getElementById('jumere').value = detalle.jumere || "";
+        document.getElementById('informe').value = detalle.informe || "";
+        document.getElementById('resena').value = detalle.resena || "";
+        document.getElementById('inicio').value = detalle.inicio || "";
+        document.getElementById('fin').value = detalle.fin || "";
+
+        if (detalle.denunciados && detalle.denunciados.length > 0) {
+          detalle.denunciados.forEach(d => agregarDenunciado(d));
+        } else {
+          agregarDenunciado(); // uno vacío por defecto
+        }
+      } else {
+        agregarDenunciado(); // uno vacío por defecto si no hay datos
+      }
+    };
+  </script>
+</body>
+</html>

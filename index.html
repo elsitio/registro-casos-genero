@@ -1,0 +1,146 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Casos de Género</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .container {
+      max-width: 700px;
+      margin: 50px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .case-list {
+      margin-top: 30px;
+    }
+    .case-item {
+      padding: 12px;
+      background: #f9f9f9;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .case-info {
+      flex: 1;
+      cursor: pointer;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+      border: none;
+      padding: 8px 12px;
+      color: white;
+      border-radius: 8px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #a71d2a;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Registrar Caso de Género</h1>
+
+    <input type="text" id="caseNumber" placeholder="Número de caso" />
+    <input type="text" id="causante" placeholder="Nombre del causante" />
+    <button onclick="saveCase()">Guardar caso</button>
+
+    <div class="case-list" id="caseList"></div>
+  </div>
+
+  <script>
+    const caseList = document.getElementById('caseList');
+
+    function saveCase() {
+      const number = document.getElementById('caseNumber').value.trim();
+      const causante = document.getElementById('causante').value.trim();
+      if (number === "" || causante === "") {
+        return alert("Complete ambos campos");
+      }
+
+      localStorage.setItem(`caso-${number}`, JSON.stringify({ number, causante }));
+      renderCases();
+
+      document.getElementById('caseNumber').value = "";
+      document.getElementById('causante').value = "";
+    }
+
+    function deleteCase(key) {
+      if (confirm("¿Estás seguro de eliminar este caso?")) {
+        localStorage.removeItem(key);
+        localStorage.removeItem(`detalle-${key.split('-')[1]}`); // Borra también los detalles
+        renderCases();
+      }
+    }
+
+    function renderCases() {
+      caseList.innerHTML = "";
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith("caso-")) {
+          const data = JSON.parse(localStorage.getItem(key));
+
+          const div = document.createElement('div');
+          div.className = "case-item";
+
+          const info = document.createElement('div');
+          info.className = "case-info";
+          info.textContent = `Caso Nº ${data.number} - ${data.causante}`;
+          info.onclick = () => window.location.href = `detalle.html?caso=${data.number}`;
+
+          const delBtn = document.createElement('button');
+          delBtn.className = "delete-btn";
+          delBtn.textContent = "Eliminar";
+          delBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteCase(key);
+          };
+
+          div.appendChild(info);
+          div.appendChild(delBtn);
+          caseList.appendChild(div);
+        }
+      });
+    }
+
+    window.onload = renderCases;
+  </script>
+</body>
+</html>
